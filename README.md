@@ -1,7 +1,8 @@
 # Sparse-PCA-MLSE
-Sparse PCA on white matter connectome data for MLSE project
 
-For my postdoc project using the MLSE data, I used connectomics to find patterns of white matter connectivity degeneration in each patient group. Given the number of connections, I used sparse PCA from the PMA package in R to find meaningful patterns of change in these groups.
+For my postdoc project using the MLSE data, I used connectomics to find patterns of white matter connectivity degeneration in each patient group. Given the number of connections, I used sparse PCA from the PMA package in R to find meaningful patterns of change in these groups.<br />
+This is an example of my workflow:
+![MLSE_WM_Workflow](https://user-images.githubusercontent.com/88196987/232834166-b5b1d69a-2488-41ed-b4ab-ac28436a61b3.jpg)
 
 Sparse PCA requires hyper parameter (sparsity parameter) tuning. I found this resource - Tibshirani group (the one that initially proposed sparse PCA) have a package of their own called PMA. It is described in more detail here: https://academic.oup.com/biostatistics/article/10/3/515/293026. That package has a sparse PCA and a cross-validation algorithm that helps with tuning parameter selection. The package also allows to do orthogonal PCA if needed. As part of the PMA package, the SPC algorithm runs a sparse PCA with penalty applied to columns (not rows)
 
@@ -68,7 +69,6 @@ Plot the variance explained. Note, that I have done sparse PCA for 5 different i
 Show the plot for sparse PCA loadings for all 5 indices
 
 ![LoadingDistribution](https://user-images.githubusercontent.com/88196987/232826234-2f39d4e3-41bd-4b80-81d0-4bb0a4476fe4.jpeg)
-
 
 Next, I conduct regressions between sparse PCA loadings (connectome) and regular PCA loadings (behaviour) to find associations between these two datasets (code not shown) and plot these results in a tile plot (plot below shows only one PCA factor).
 ![Comp3](https://user-images.githubusercontent.com/88196987/232825772-94c5f075-c0b3-448e-a394-b05c01a221d2.jpeg)
