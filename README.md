@@ -4,7 +4,7 @@ For my postdoc project using the MLSE data, I used connectomics to find patterns
 This is an example of my workflow:
 ![MLSE_WM_Workflow](https://user-images.githubusercontent.com/88196987/232834166-b5b1d69a-2488-41ed-b4ab-ac28436a61b3.jpg)
 
-Sparse PCA requires hyper parameter (sparsity parameter) tuning. I found this resource - Tibshirani group (the one that initially proposed sparse PCA) have a package of their own called PMA. It is described in more detail here: https://academic.oup.com/biostatistics/article/10/3/515/293026. That package has a sparse PCA and a cross-validation algorithm that helps with tuning parameter selection. The package also allows to do orthogonal PCA if needed. As part of the PMA package, the SPC algorithm runs a sparse PCA with penalty applied to columns (not rows)
+Sparse PCA requires hyper parameter (sparsity parameter) tuning. I found this resource from the Tibshirani group (the one that initially proposed sparse PCA) in a package called PMA. It is described in more detail here: https://academic.oup.com/biostatistics/article/10/3/515/293026. PMA package has a sparse PCA and a cross-validation algorithm that helps with tuning parameter selection. The package also allows to do orthogonal PCA if needed. As part of the PMA package, the SPC algorithm runs a sparse PCA with penalty applied to columns (not rows)
 
 The excerpt of the code for sparse PCA is here:
 Main steps involve: (i) choose number of components = 36 as we derived from component selection (code not shown here); (ii) for sparsity parameter tuning, run SPC.CV; (iii) store the sumabsv sparsity parameter as a variable; (iv) plug it into the SPC; (v) save the u output as rotated SCORES, the v output as rotated LOADINGS, and the prop.var.explained as VAR EXPL
@@ -66,13 +66,13 @@ Plot the variance explained. Note, that I have done sparse PCA for 5 different i
   
   ![SparsePCA_VarExplain_85Percent](https://user-images.githubusercontent.com/88196987/232824072-6da04e30-df68-4268-8038-a1f841a20054.jpeg)
 
-Show the plot for sparse PCA loadings for all 5 indices
+I repeat the sparse PCA for all 5 indices and display the loadings in this plot below (plot code not displayed here).
 
 ![LoadingDistribution](https://user-images.githubusercontent.com/88196987/232826234-2f39d4e3-41bd-4b80-81d0-4bb0a4476fe4.jpeg)
 
-Next, I conduct regressions between sparse PCA loadings (connectome) and regular PCA loadings (behaviour) to find associations between these two datasets (code not shown) and plot these results in a tile plot (plot below shows only one PCA factor).
+Next, I choose the highest loading sparse PCs and use regressions to examine associations between these high loading sparse PCs and the regular PCA done on behavioural data (code not shown here). I plot these results in a tile plot (plot below shows only one PCA factor).
 ![Comp3](https://user-images.githubusercontent.com/88196987/232825772-94c5f075-c0b3-448e-a394-b05c01a221d2.jpeg)
 
-Project the same plot from above but into the brain (see right panel for white matter)
+I then select the associations that cross the significance threshold for multiple comparisons and plot those associations within the brain (see right panel for emergent associations)
 
 ![Comp2](https://user-images.githubusercontent.com/88196987/232826504-655f6a44-11eb-4ac2-bfd9-caec095617a3.JPG)
