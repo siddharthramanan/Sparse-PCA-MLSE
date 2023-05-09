@@ -1,32 +1,32 @@
 # Sparse-PCA-MLSE
 
-For my postdoc project using the MLSE data, I used connectomics to find patterns of white matter connectivity degeneration in each patient group. Given the number of connections, I used sparse PCA from the PMA package in R to find meaningful patterns of change in these groups.<br />
-This is an example of my workflow:
+In this project, I use an in-house dataset containing measures of language performance and white matter brain connectivity changes in three patinet groups. As the data is high-dimensional, I use connectomics to find patterns of white matter connectivity degeneration in each patient group. Given the number of connections, I used sparse PCA from the PMA package in R to find meaningful patterns of change in these groups.<br />
+This is an example picture of my workflow:
 ![MLSE_WM_Workflow](https://user-images.githubusercontent.com/88196987/232834166-b5b1d69a-2488-41ed-b4ab-ac28436a61b3.jpg)
 
-Sparse PCA requires hyper parameter (sparsity parameter) tuning. I found this resource from the Tibshirani group (the one that initially proposed sparse PCA) in a package called PMA. It is described in more detail here: https://academic.oup.com/biostatistics/article/10/3/515/293026. PMA package has a sparse PCA and a cross-validation algorithm that helps with tuning parameter selection. The package also allows to do orthogonal PCA if needed. As part of the PMA package, the SPC algorithm runs a sparse PCA with penalty applied to columns (not rows)
+Sparse PCA requires hyper parameter tuning. I use the PMA package in R from the the Tibshirani group which is described in more detail here: https://academic.oup.com/biostatistics/article/10/3/515/293026. PMA package has a sparse PCA and an accompanying cross-validation algorithm for parameter tuning. The package also allows to do orthogonal PCA if needed.
 
-The excerpt of the code for sparse PCA is here:
-Main steps involve: (i) choose number of components = 36 as we derived from component selection (code not shown here); (ii) for sparsity parameter tuning, run SPC.CV; (iii) store the sumabsv sparsity parameter as a variable; (iv) plug it into the SPC; (v) save the u output as rotated SCORES, the v output as rotated LOADINGS, and the prop.var.explained as VAR EXPL
+An excerpt of my sparse PCA code pipeline is here:
+The main steps involves: (i) choose 36 components (this number was derived from an independent component selection algorithm not shown here); (ii) running SPC.cv command for sparsity parameter tuning; (iii) storing the sumabsv sparsity parameter as a variable; (iv) plug it into the sparse PCA; (v) save the u output as rotated SCORES, the v output as rotated LOADINGS, and the prop.var.explained as VAR EXPL
 
 load the library<br />
 `library(PMA)`
 
-First, I select a sparsity parameter. This is represented by the sum of absolute values (sumabsv). The default is the sqrt(ncol(x)), in this case, square root of ncol of our df, which is 81. If I choose this value, then the solution is the least sparse one. The lower the sumabsv value, the more sparse the solution is. To find the best sumabsv, I tell the cross-validation algorithm to consider everything between 1 and the sqrt(ncol(matrix)) value. The idea is that the K has already been selected through our other venetian blind cv method.
+Selecting the sparsity parameter: In SPC.cv, this is represented by the sum of absolute values (sumabsv). The default is the sqrt(ncol(x)) which leads to the least sparse solution. The lower the sumabsv value, the more sparse the solution is. To find the best sumabsv, I tell the cross-validation algorithm to consider everything between 1 and the sqrt(ncol(matrix)) value.
 
 `out.cv.x<-SPC.cv(as.matrix(df), # input the matrix`<br />
-                `sumabsvs=seq(1, sqrt(ncol(df)), # for hyperparameter tuning, set the limits between 1 and sqrt of ncols (which is the highest you can have - see help)`<br />
+                `sumabsvs=seq(1, sqrt(ncol(df)), # for hyperparameter tuning, find the value in a sequence between limits between 1 and sqrt of ncols`<br />
               `niter=100, nfolds=10, orth = T) # 100 iterations, 10 folds, and  components to be orthogonal`<br />
 
 `out.cv.x$bestsumabsv`<br />
 
-The suggested sumabsv value is 73. This is close enough to the sqrt(ncol(mlse_conn_df_FA_85_resid_forPCA_withSite.resid)), which is 81, so lets plug the `out.cv.x$bestsumabsv` as the tuning parameter in to the SPC solution.<br />
+The suggested sumabsv value is 73. I plug this as the tuning parameter in to the SPC solution.<br />
 `out.tmp<-SPC(as.matrix(df), sumabsv = out.cv.x$bestsumabsv, K=36, orth = T,niter=100, center = F)`<br />
 
 `out.tmp$prop.var.explained`<br />
 91% variance explained
 
-Plot the variance explained. Note, that I have done sparse PCA for 5 different indices (FA, SC, AD, RD, ADC) from the connectome, concatenated and reshaped the data into a new df called df_melt (code not shown here)<br />
+Plot the variance explained: Note, that I have done sparse PCA for 5 different indices (FA, SC, AD, RD, ADC) from the connectome, concatenated and reshaped the data into a new df called df_melt (code not shown here)<br />
 
 `df_sparse_varexp <- ggplot(df_melt, aes(x=as.factor(Component), y=value, group=VarExpIndex)) +` <br />
   `geom_step(aes(colour=VarExpIndex)) +`<br />
